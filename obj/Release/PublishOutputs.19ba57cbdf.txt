@@ -1,0 +1,5 @@
+D:\VS MOD NEW\BetterHoe\BetterHoe\BetterHoe\bin\Release\Mods\mod\publish\modinfo.json
+D:\VS MOD NEW\BetterHoe\BetterHoe\BetterHoe\bin\Release\Mods\mod\publish\BetterHoe.dll
+D:\VS MOD NEW\BetterHoe\BetterHoe\BetterHoe\bin\Release\Mods\mod\publish\BetterHoe.deps.json
+D:\VS MOD NEW\BetterHoe\BetterHoe\BetterHoe\bin\Release\Mods\mod\publish\BetterHoe.pdb
+D:\VS MOD NEW\BetterHoe\BetterHoe\BetterHoe\bin\Release\Mods\mod\publish\Newtonsoft.Json.dll

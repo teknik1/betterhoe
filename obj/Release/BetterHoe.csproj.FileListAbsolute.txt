@@ -1,0 +1,13 @@
+D:\VS MOD NEW\BetterHoe\BetterHoe\BetterHoe\bin\Release\Mods\mod\modinfo.json
+D:\VS MOD NEW\BetterHoe\BetterHoe\BetterHoe\bin\Release\Mods\mod\BetterHoe.deps.json
+D:\VS MOD NEW\BetterHoe\BetterHoe\BetterHoe\bin\Release\Mods\mod\BetterHoe.dll
+D:\VS MOD NEW\BetterHoe\BetterHoe\BetterHoe\bin\Release\Mods\mod\BetterHoe.pdb
+D:\VS MOD NEW\BetterHoe\BetterHoe\BetterHoe\obj\Release\BetterHoe.csproj.AssemblyReference.cache
+D:\VS MOD NEW\BetterHoe\BetterHoe\BetterHoe\obj\Release\BetterHoe.GeneratedMSBuildEditorConfig.editorconfig
+D:\VS MOD NEW\BetterHoe\BetterHoe\BetterHoe\obj\Release\BetterHoe.AssemblyInfoInputs.cache
+D:\VS MOD NEW\BetterHoe\BetterHoe\BetterHoe\obj\Release\BetterHoe.AssemblyInfo.cs
+D:\VS MOD NEW\BetterHoe\BetterHoe\BetterHoe\obj\Release\BetterHoe.csproj.CoreCompileInputs.cache
+D:\VS MOD NEW\BetterHoe\BetterHoe\BetterHoe\obj\Release\BetterHoe.dll
+D:\VS MOD NEW\BetterHoe\BetterHoe\BetterHoe\obj\Release\refint\BetterHoe.dll
+D:\VS MOD NEW\BetterHoe\BetterHoe\BetterHoe\obj\Release\BetterHoe.pdb
+D:\VS MOD NEW\BetterHoe\BetterHoe\BetterHoe\obj\Release\ref\BetterHoe.dll

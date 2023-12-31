@@ -1,0 +1,13 @@
+{
+    "type": "code",
+    "modid": "BetterHoe",
+    "name": "BetterHoe",
+    "authors": [
+        "KO Teknik"
+    ],
+    "description": "Let you make path with Hoe",
+    "version": "1.0.0",
+    "dependencies": {
+        "game": ""
+    }
+}
