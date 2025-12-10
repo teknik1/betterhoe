@@ -12,7 +12,9 @@ namespace BetterHoe
 {
     public class Core : ModSystem
     {
-        ICoreAPI api;
+        private ICoreAPI api;
+        private IServerNetworkChannel serverChannel;
+        private IClientNetworkChannel clientChannel;
         
         public override void Start(ICoreAPI api)
         {
@@ -28,21 +30,34 @@ namespace BetterHoe
         {
             this.api = capi;
             base.StartClientSide(capi);
-            // ItemHoeEDITConfig.ReadConfig(capi); // Pas nécessaire maintenant
+            ItemHoeEDITConfig.ReadConfig(capi);
+            clientChannel = capi.Network
+                .RegisterChannel("betterhoe-config")
+                .RegisterMessageType<ItemHoeEDITConfig.BetterHoeConfig>()
+                .SetMessageHandler<ItemHoeEDITConfig.BetterHoeConfig>(config =>
+                {
+                    ItemHoeEDITConfig.ApplyServerConfig(config, capi);
+                    capi.Logger.Notification("[CONFIG] BetterHoe configuration received from the server.");
+                });
             capi.Logger.Notification("[CONFIG] Initializing the BetterHoeConfig.json file");
             capi.World.Logger.Event("started 'Client BetterHoe' mod");
         }
 
         public override void StartServerSide(ICoreServerAPI sapi)
         {
-            this.api = sapi;          
-            // ItemHoeEDITConfig.ReadConfig(sapi); // Pas nécessaire maintenant
+            this.api = sapi;
+            ItemHoeEDITConfig.ReadConfig(sapi);
+            serverChannel = sapi.Network
+                .RegisterChannel("betterhoe-config")
+                .RegisterMessageType<ItemHoeEDITConfig.BetterHoeConfig>();
+            sapi.Event.PlayerJoin += OnPlayerJoin;
             sapi.Logger.Notification("[CONFIG] Initializing the BetterHoeConfig.json file");
             sapi.World.Logger.Event("started 'Server BetterHoe' mod");
         }
 
         public override void AssetsFinalize(ICoreAPI api)
-        {                    
+        {
+            ItemHoeEDITConfig.ReadConfig(api);
             bool invalidConfigLogged = false;
 
             foreach (var block in api.World.Blocks)
@@ -85,6 +100,21 @@ namespace BetterHoe
                     invalidConfigLogged = true;
                 }
             }
+        }
+
+        private void OnPlayerJoin(IServerPlayer byPlayer)
+        {
+            serverChannel?.SendPacket(ItemHoeEDITConfig.GetConfigForSync(), byPlayer);
+        }
+
+        public override void Dispose()
+        {
+            if (api is ICoreServerAPI sapi)
+            {
+                sapi.Event.PlayerJoin -= OnPlayerJoin;
+            }
+
+            base.Dispose();
         }
     }
 }
