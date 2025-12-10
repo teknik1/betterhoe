@@ -1,4 +1,5 @@
-﻿using Vintagestory.API.Common;
+using Vintagestory.API.Client;
+using Vintagestory.API.Common;
 
 namespace BetterHoe.Tools.Houe
 {
@@ -14,11 +15,23 @@ namespace BetterHoe.Tools.Houe
             _api = api;
         }
 
-        public static void ReadConfig()
+        public static void ReadConfig(ICoreAPI api = null)
         {
-            if (_HoeConfig == null)
+            if (api != null)
             {
-                _HoeConfig = LoadConfig(_api); // Utilise la référence statique _api
+                _api = api;
+            }
+
+            if (_HoeConfig != null || _api == null)
+            {
+                return;
+            }
+
+            bool shouldLoadLocalConfig = _api.Side == EnumAppSide.Server || (_api is ICoreClientAPI capi && capi.IsSinglePlayer);
+
+            if (shouldLoadLocalConfig)
+            {
+                _HoeConfig = LoadConfig(_api);
                 if (_HoeConfig == null || _HoeConfig.ConfigVersion != CurrentConfigVersion)
                 {
                     _api.Logger.Warning("The BetterHoeConfig.json configuration could not be loaded. Default values will be used.");
@@ -27,21 +40,21 @@ namespace BetterHoe.Tools.Houe
                     if (_HoeConfig == null)
                     {
                         _api.Logger.Error("Unexpected error: Unable to generate default BetterHoeConfig.json configuration.");
-                        _HoeConfig = new BetterHoeConfig(); // Utilise un constructeur par défaut
+                        _HoeConfig = CreateDefaultConfig();
                     }
                 }
                 else
                 {
                     _api.Logger.Notification("The BetterHoeConfig.json configuration has been loaded successfully.");
                 }
-
-                if (_HoeConfig.DamageItemStandard < 1)
-                {
-                    _api.Logger.Error("DamageItemStandard value is less than 1. It will be reset to 1.");
-                    _HoeConfig.DamageItemStandard = 1;
-                    _api.StoreModConfig(_HoeConfig, ConfigFileName);
-                }
             }
+
+            if (_HoeConfig == null)
+            {
+                _HoeConfig = CreateDefaultConfig();
+            }
+
+            ValidateConfig();
         }
 
         private static BetterHoeConfig LoadConfig(ICoreAPI api)
@@ -51,7 +64,12 @@ namespace BetterHoe.Tools.Houe
 
         private static void GenerateConfig(ICoreAPI api)
         {
-            var config = new BetterHoeConfig
+            api.StoreModConfig(CreateDefaultConfig(), ConfigFileName);
+        }
+
+        private static BetterHoeConfig CreateDefaultConfig()
+        {
+            return new BetterHoeConfig
             {
                 ConfigVersion = CurrentConfigVersion,
                 SelectedMaterialSet = "MinBronze",
@@ -63,7 +81,42 @@ namespace BetterHoe.Tools.Houe
                 ConsumeSaturationExtraPlow = 5,
                 ConsumeSaturationExtraPath = 2,
             };
-            api.StoreModConfig(config, ConfigFileName);
+        }
+
+        private static void ValidateConfig()
+        {
+            if (_HoeConfig.DamageItemStandard < 1)
+            {
+                _api?.Logger.Error("DamageItemStandard value is less than 1. It will be reset to 1.");
+                _HoeConfig.DamageItemStandard = 1;
+                if (_api?.Side == EnumAppSide.Server || (_api is ICoreClientAPI capi && capi.IsSinglePlayer))
+                {
+                    _api.StoreModConfig(_HoeConfig, ConfigFileName);
+                }
+            }
+        }
+
+        public static void ApplyServerConfig(BetterHoeConfig config, ICoreAPI api)
+        {
+            _api = api;
+            _HoeConfig = config ?? CreateDefaultConfig();
+            ValidateConfig();
+        }
+
+        public static BetterHoeConfig GetConfigForSync()
+        {
+            return new BetterHoeConfig
+            {
+                ConfigVersion = HoeConfig.ConfigVersion,
+                SelectedMaterialSet = HoeConfig.SelectedMaterialSet,
+                SetGravityOnPath = HoeConfig.SetGravityOnPath,
+                DamageItemStandard = HoeConfig.DamageItemStandard,
+                DamageItemExtraPlow = HoeConfig.DamageItemExtraPlow,
+                DamageItemExtraPath = HoeConfig.DamageItemExtraPath,
+                ConsumeSaturationStandard = HoeConfig.ConsumeSaturationStandard,
+                ConsumeSaturationExtraPlow = HoeConfig.ConsumeSaturationExtraPlow,
+                ConsumeSaturationExtraPath = HoeConfig.ConsumeSaturationExtraPath
+            };
         }
 
         public static BetterHoeConfig HoeConfig
@@ -78,7 +131,7 @@ namespace BetterHoe.Tools.Houe
             }
         }
 
-        internal class BetterHoeConfig
+        public class BetterHoeConfig
         {
             public int ConfigVersion { get; set; } = 1;
             public string Exemple_SelectedMaterialSet_AllowedForForestFloor { get; set; } = "Material selected for interaction with the forest floor. Possible values: AllMaterials, MinCopper, MinBronze, MinIron, Nothing. Default: MinBronze.";
